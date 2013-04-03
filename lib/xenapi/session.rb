@@ -16,9 +16,12 @@ module XenAPI
       @uri, @block = uri, block
     end
 
-    def login_with_password(username, password, timeout = 1200)
+    def login_with_password(username, password, timeout = 1200, ssl_verify = false)
       begin
         @client = XMLRPC::Client.new2(@uri, nil, timeout)
+        if not ssl_verify
+                @client.instance_variable_get(:@http).instance_variable_set(:@verify_mode, OpenSSL::SSL::VERIFY_NONE)
+        end
         @session = @client.proxy("session")
 
         response = @session.login_with_password(username, password)
